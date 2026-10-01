@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Weather App</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="card">
+
+        <!-- Search Section -->
+        <div class="search">
+
+            <input
+                type="text"
+                placeholder="Enter City Name"
+                spellcheck="false"
+            >
+
+            <button>
+                <img src="images/search.png" alt="Search">
+            </button>
+
+        </div>
+
+        <!-- Weather Section -->
+        <div class="weather">
+
+            <img
+                src="images/rain.png"
+                class="weather-icon"
+                alt="Weather"
+            >
+
+            <h1 class="temp">--°C</h1>
+
+            <h2 class="city">City</h2>
+
+            <!-- Details -->
+            <div class="details">
+
+                <!-- Humidity -->
+                <div class="col">
+
+                    <img
+                        src="images/humidity.png"
+                        alt="Humidity"
+                    >
+
+                    <div>
+                        <p class="humidity">--%</p>
+                        <p>Humidity</p>
+                    </div>
+
+                </div>
+
+                <!-- Wind -->
+                <div class="col">
+
+                    <img
+                        src="images/wind.png"
+                        alt="Wind"
+                    >
+
+                    <div>
+                        <p class="wind">-- km/h</p>
+                        <p>Wind Speed</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js">
+
+      const apiKey = "YOUR_API_KEY";
+
+const apiUrl =
+    "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+
+// Select HTML elements
+
+const searchBox = document.querySelector(".search input");
+
+const searchBtn = document.querySelector(".search button");
+
+const weatherIcon = document.querySelector(".weather-icon");
+
+
+// Weather function
+
+async function checkWeather(city) {
+
+    // Check empty input
+
+    if (city.trim() === "") {
+
+        alert("Please enter a city name");
+
+        return;
+    }
+
+
+    try {
+
+        // API request
+
+        const response = await fetch(
+            apiUrl +
+            encodeURIComponent(city) +
+            `&appid=${apiKey}`
+        );
+
+
+        // Convert response to JSON
+
+        const data = await response.json();
+
+
+        console.log(data);
+
+
+        // Check API response
+
+        if (!response.ok) {
+
+            alert("City not found!");
+
+            return;
+        }
+
+
+        // Update city
+
+        document.querySelector(".city").innerHTML =
+            data.name;
+
+
+        // Update temperature
+
+        document.querySelector(".temp").innerHTML =
+            Math.round(data.main.temp) + "°C";
+
+
+        // Update humidity
+
+        document.querySelector(".humidity").innerHTML =
+            data.main.humidity + "%";
+
+
+        // Convert wind speed
+
+        const windSpeed =
+            (data.wind.speed * 3.6).toFixed(1);
+
+
+        // Update wind speed
+
+        document.querySelector(".wind").innerHTML =
+            windSpeed + " km/h";
+
+
+        // Get weather condition
+
+        const weatherCondition =
+            data.weather[0].main;
+
+
+        // Change weather icon
+
+        if (weatherCondition === "Clouds") {
+
+            weatherIcon.src =
+                "images/clouds.png";
+
+        }
+
+        else if (weatherCondition === "Clear") {
+
+            weatherIcon.src =
+                "images/clear.png";
+
+        }
+
+        else if (weatherCondition === "Rain") {
+
+            weatherIcon.src =
+                "images/rain.png";
+
+        }
+
+        else if (weatherCondition === "Drizzle") {
+
+            weatherIcon.src =
+                "images/drizzle.png";
+
+        }
+
+        else if (weatherCondition === "Mist") {
+
+            weatherIcon.src =
+                "images/mist.png";
+
+        }
+
+        else if (weatherCondition === "Snow") {
+
+            weatherIcon.src =
+                "images/snow.png";
+
+        }
+
+        else {
+
+            weatherIcon.src =
+                "images/clouds.png";
+        }
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error:",
+            error
+        );
+
+        alert(
+            "Unable to fetch weather data. Check your internet connection."
+        );
+    }
+}
+
+
+// Search button click
+
+searchBtn.addEventListener(
+    "click",
+    () => {
+
+        checkWeather(
+            searchBox.value
+        );
+
+    }
+);
+
+
+// Press Enter to search
+
+searchBox.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (event.key === "Enter") {
+
+            checkWeather(
+                searchBox.value
+            );
+
+        }
+
+    }
+);
+   
+    </script>
+
+</body>
+
+</html>
